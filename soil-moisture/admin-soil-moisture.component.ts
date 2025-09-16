@@ -62,23 +62,27 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
             <button (click)="loadSoilMoistureLog(50)" class="control-btn">Last 50</button>
             <button (click)="loadSoilMoistureLog(100)" class="control-btn">Last 100</button>
             <button (click)="loadSoilMoistureLog(200)" class="control-btn">Last 200</button>
-            <button (click)="downloadData()" class="download-btn">📥 Download CSV</button>
+            <div class="download-group">
+              <button (click)="downloadData(50)" class="download-btn">📥 Download 50</button>
+              <button (click)="downloadData(100)" class="download-btn">📥 Download 100</button>
+              <button (click)="downloadData(200)" class="download-btn">📥 Download 200</button>
+            </div>
           </div>
           
           <div class="data-table">
-            <table>
+            <table style="text-align: center;">
               <thead>
                 <tr>
-                  <th>Timestamp</th>
-                  <th>Soil Moisture (%)</th>
-                  <th>Status</th>
+                  <th style="text-align: center !important;">Timestamp</th>
+                  <th style="text-align: center !important;">Soil Moisture (%)</th>
+                  <th style="text-align: center !important;">Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let reading of soilMoistureLog" [class.high]="reading.value > 80" [class.low]="reading.value < 20">
-                  <td>{{ reading.timestamp | date:'medium' }}</td>
-                  <td>{{ reading.value }}%</td>
-                  <td>
+                  <td style="text-align: center !important;">{{ reading.timestamp | date:'medium' }}</td>
+                  <td style="text-align: center !important;">{{ reading.value }}%</td>
+                  <td style="text-align: center !important;">
                     <span class="status" [class.normal]="reading.value >= 20 && reading.value <= 80" 
                           [class.warning]="reading.value > 80 || reading.value < 20">
                       {{ getStatus(reading.value) }}
@@ -411,6 +415,7 @@ export class AdminSoilMoistureComponent implements OnInit {
   currentUser: any;
   currentSoilMoisture: SensorData | null = null;
   soilMoistureLog: SensorLog[] = [];
+  selectedLimit = 50;
 
   constructor(
     private authService: AuthService,
@@ -422,12 +427,13 @@ export class AdminSoilMoistureComponent implements OnInit {
 
   ngOnInit() {
     this.loadCurrentSoilMoisture();
-    this.loadSoilMoistureLog(100);
+    this.loadSoilMoistureLog(this.selectedLimit);
     
-    // Refresh current soil moisture every 30 seconds
+    // Refresh current soil moisture and logs every 20 seconds
     setInterval(() => {
       this.loadCurrentSoilMoisture();
-    }, 30000);
+      this.loadSoilMoistureLog(this.selectedLimit);
+    }, 20000);
   }
 
   loadCurrentSoilMoisture() {
@@ -438,14 +444,15 @@ export class AdminSoilMoistureComponent implements OnInit {
   }
 
   loadSoilMoistureLog(limit: number) {
-    this.dataService.getSoilMoistureLog(limit).subscribe({
+    this.selectedLimit = Math.min(Math.max(limit, 50), 200);
+    this.dataService.getSoilMoistureLog(this.selectedLimit).subscribe({
       next: (data) => this.soilMoistureLog = data,
       error: (error) => console.error('Error loading soil moisture log:', error)
     });
   }
 
-  downloadData() {
-    this.dataService.downloadSoilMoistureLog().subscribe({
+  downloadData(limit: number = 100) {
+    this.dataService.downloadSoilMoistureLog(limit).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
