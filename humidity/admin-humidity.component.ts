@@ -62,23 +62,27 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
             <button (click)="loadHumidityLog(50)" class="control-btn">Last 50</button>
             <button (click)="loadHumidityLog(100)" class="control-btn">Last 100</button>
             <button (click)="loadHumidityLog(200)" class="control-btn">Last 200</button>
-            <button (click)="downloadData()" class="download-btn">📥 Download CSV</button>
+            <div class="download-group">
+              <button (click)="downloadData(50)" class="download-btn">📥 Download 50</button>
+              <button (click)="downloadData(100)" class="download-btn">📥 Download 100</button>
+              <button (click)="downloadData(200)" class="download-btn">📥 Download 200</button>
+            </div>
           </div>
           
           <div class="data-table">
-            <table>
+            <table style="text-align: center;">
               <thead>
                 <tr>
-                  <th>Timestamp</th>
-                  <th>Humidity (%)</th>
-                  <th>Status</th>
+                  <th style="text-align: center !important;">Timestamp</th>
+                  <th style="text-align: center !important;">Humidity (%)</th>
+                  <th style="text-align: center !important;">Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let reading of humidityLog" [class.high]="reading.value > 80" [class.low]="reading.value < 30">
-                  <td>{{ reading.timestamp | date:'medium' }}</td>
-                  <td>{{ reading.value }}%</td>
-                  <td>
+                  <td style="text-align: center !important;">{{ reading.timestamp | date:'medium' }}</td>
+                  <td style="text-align: center !important;">{{ reading.value }}%</td>
+                  <td style="text-align: center !important;">
                     <span class="status" [class.normal]="reading.value >= 30 && reading.value <= 80" 
                           [class.warning]="reading.value > 80 || reading.value < 30">
                       {{ getStatus(reading.value) }}
@@ -411,6 +415,7 @@ export class AdminHumidityComponent implements OnInit {
   currentUser: any;
   currentHumidity: SensorData | null = null;
   humidityLog: SensorLog[] = [];
+  selectedLimit = 50;
 
   constructor(
     private authService: AuthService,
@@ -422,12 +427,13 @@ export class AdminHumidityComponent implements OnInit {
 
   ngOnInit() {
     this.loadCurrentHumidity();
-    this.loadHumidityLog(100);
+    this.loadHumidityLog(this.selectedLimit);
     
-    // Refresh current humidity every 30 seconds
+    // Refresh current humidity and logs every 20 seconds
     setInterval(() => {
       this.loadCurrentHumidity();
-    }, 30000);
+      this.loadHumidityLog(this.selectedLimit);
+    }, 20000);
   }
 
   loadCurrentHumidity() {
@@ -438,14 +444,15 @@ export class AdminHumidityComponent implements OnInit {
   }
 
   loadHumidityLog(limit: number) {
-    this.dataService.getHumidityLog(limit).subscribe({
+    this.selectedLimit = Math.min(Math.max(limit, 50), 200);
+    this.dataService.getHumidityLog(this.selectedLimit).subscribe({
       next: (data) => this.humidityLog = data,
       error: (error) => console.error('Error loading humidity log:', error)
     });
   }
 
-  downloadData() {
-    this.dataService.downloadHumidityLog().subscribe({
+  downloadData(limit: number = 100) {
+    this.dataService.downloadHumidityLog(limit).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
