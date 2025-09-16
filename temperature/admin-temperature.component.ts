@@ -62,23 +62,27 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
             <button (click)="loadTemperatureLog(50)" class="control-btn">Last 50</button>
             <button (click)="loadTemperatureLog(100)" class="control-btn">Last 100</button>
             <button (click)="loadTemperatureLog(200)" class="control-btn">Last 200</button>
-            <button (click)="downloadData()" class="download-btn">📥 Download CSV</button>
+            <div class="download-group">
+              <button (click)="downloadData(50)" class="download-btn">📥 Download 50</button>
+              <button (click)="downloadData(100)" class="download-btn">📥 Download 100</button>
+              <button (click)="downloadData(200)" class="download-btn">📥 Download 200</button>
+            </div>
           </div>
           
           <div class="data-table">
-            <table>
+            <table style="text-align: center;">
               <thead>
                 <tr>
-                  <th>Timestamp</th>
-                  <th>Temperature (°C)</th>
-                  <th>Status</th>
+                  <th style="text-align: center !important;">Timestamp</th>
+                  <th style="text-align: center !important;">Temperature (°C)</th>
+                  <th style="text-align: center !important;">Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let reading of temperatureLog" [class.high]="reading.value > 30" [class.low]="reading.value < 15">
-                  <td>{{ reading.timestamp | date:'medium' }}</td>
-                  <td>{{ reading.value }}°C</td>
-                  <td>
+                  <td style="text-align: center !important;">{{ reading.timestamp | date:'medium' }}</td>
+                  <td style="text-align: center !important;">{{ reading.value }}°C</td>
+                  <td style="text-align: center !important;">
                     <span class="status" [class.normal]="reading.value >= 15 && reading.value <= 30" 
                           [class.warning]="reading.value > 30 || reading.value < 15">
                       {{ getStatus(reading.value) }}
@@ -288,16 +292,20 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
       border-radius: 15px;
       overflow: hidden;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      text-align: center;
     }
 
     th, td {
       padding: 15px;
-      text-align: left;
+      text-align: center !important;
       border-bottom: 1px solid #e1e8ed;
     }
 
@@ -411,6 +419,7 @@ export class AdminTemperatureComponent implements OnInit {
   currentUser: any;
   currentTemperature: SensorData | null = null;
   temperatureLog: SensorLog[] = [];
+  selectedLimit = 50;
 
   constructor(
     private authService: AuthService,
@@ -422,12 +431,13 @@ export class AdminTemperatureComponent implements OnInit {
 
   ngOnInit() {
     this.loadCurrentTemperature();
-    this.loadTemperatureLog(100);
+    this.loadTemperatureLog(this.selectedLimit);
     
-    // Refresh current temperature every 30 seconds
+    // Refresh current temperature and logs every 20 seconds
     setInterval(() => {
       this.loadCurrentTemperature();
-    }, 30000);
+      this.loadTemperatureLog(this.selectedLimit);
+    }, 20000);
   }
 
   loadCurrentTemperature() {
@@ -438,14 +448,15 @@ export class AdminTemperatureComponent implements OnInit {
   }
 
   loadTemperatureLog(limit: number) {
-    this.dataService.getTemperatureLog(limit).subscribe({
+    this.selectedLimit = Math.min(Math.max(limit, 50), 200);
+    this.dataService.getTemperatureLog(this.selectedLimit).subscribe({
       next: (data) => this.temperatureLog = data,
       error: (error) => console.error('Error loading temperature log:', error)
     });
   }
 
-  downloadData() {
-    this.dataService.downloadTemperatureLog().subscribe({
+  downloadData(limit: number = 100) {
+    this.dataService.downloadTemperatureLog(limit).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
