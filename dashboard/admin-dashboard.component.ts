@@ -124,31 +124,35 @@ import { DataService, SensorData } from '../../../services/data.service';
           <h2>System Status</h2>
           <div class="status-grid">
             <div class="status-card">
-              <div class="status-indicator online"></div>
+              <div class="status-indicator" [class]="getTemperatureStatus().class"></div>
               <div class="status-content">
                 <h3>Temperature Sensor</h3>
-                <p>Online</p>
+                <p>{{ getTemperatureStatus().text }}</p>
+                <small *ngIf="temperatureData">{{ getTimeAgo(temperatureData.timestamp) }}</small>
               </div>
             </div>
             <div class="status-card">
-              <div class="status-indicator online"></div>
+              <div class="status-indicator" [class]="getHumidityStatus().class"></div>
               <div class="status-content">
                 <h3>Humidity Sensor</h3>
-                <p>Online</p>
+                <p>{{ getHumidityStatus().text }}</p>
+                <small *ngIf="humidityData">{{ getTimeAgo(humidityData.timestamp) }}</small>
               </div>
             </div>
             <div class="status-card">
-              <div class="status-indicator online"></div>
+              <div class="status-indicator" [class]="getSoilMoistureStatus().class"></div>
               <div class="status-content">
                 <h3>Soil Moisture Sensor</h3>
-                <p>Online</p>
+                <p>{{ getSoilMoistureStatus().text }}</p>
+                <small *ngIf="soilMoistureData">{{ getTimeAgo(soilMoistureData.timestamp) }}</small>
               </div>
             </div>
             <div class="status-card">
-              <div class="status-indicator online"></div>
+              <div class="status-indicator" [class]="getDatabaseStatus().class"></div>
               <div class="status-content">
                 <h3>Database</h3>
-                <p>Connected</p>
+                <p>{{ getDatabaseStatus().text }}</p>
+                <small>{{ getDatabaseStatus().details }}</small>
               </div>
             </div>
           </div>
@@ -358,6 +362,10 @@ import { DataService, SensorData } from '../../../services/data.service';
       background: #e74c3c;
     }
 
+    .status-indicator.stale {
+      background: #f39c12;
+    }
+
     .status-content h3 {
       margin: 0 0 5px 0;
       color: #2c3e50;
@@ -434,5 +442,93 @@ export class AdminDashboardComponent implements OnInit {
 
   navigateTo(path: string) {
     this.router.navigate([path]);
+  }
+
+  getTemperatureStatus() {
+    if (!this.temperatureData) {
+      return { class: 'offline', text: 'Offline' };
+    }
+    
+    const now = new Date();
+    const dataTime = new Date(this.temperatureData!.timestamp);
+    const minutesAgo = (now.getTime() - dataTime.getTime()) / (1000 * 60);
+    
+    if (minutesAgo <= 2) {
+      return { class: 'online', text: 'Online' };
+    } else if (minutesAgo <= 10) {
+      return { class: 'stale', text: 'Stale' };
+    } else {
+      return { class: 'offline', text: 'Offline' };
+    }
+  }
+
+  getHumidityStatus() {
+    if (!this.humidityData) {
+      return { class: 'offline', text: 'Offline' };
+    }
+    
+    const now = new Date();
+    const dataTime = new Date(this.humidityData!.timestamp);
+    const minutesAgo = (now.getTime() - dataTime.getTime()) / (1000 * 60);
+    
+    if (minutesAgo <= 2) {
+      return { class: 'online', text: 'Online' };
+    } else if (minutesAgo <= 10) {
+      return { class: 'stale', text: 'Stale' };
+    } else {
+      return { class: 'offline', text: 'Offline' };
+    }
+  }
+
+  getSoilMoistureStatus() {
+    if (!this.soilMoistureData) {
+      return { class: 'offline', text: 'Offline' };
+    }
+    
+    const now = new Date();
+    const dataTime = new Date(this.soilMoistureData!.timestamp);
+    const minutesAgo = (now.getTime() - dataTime.getTime()) / (1000 * 60);
+    
+    if (minutesAgo <= 2) {
+      return { class: 'online', text: 'Online' };
+    } else if (minutesAgo <= 10) {
+      return { class: 'stale', text: 'Stale' };
+    } else {
+      return { class: 'offline', text: 'Offline' };
+    }
+  }
+
+  getTimeAgo(timestamp: string): string {
+    const now = new Date();
+    const dataTime = new Date(timestamp);
+    const minutesAgo = Math.floor((now.getTime() - dataTime.getTime()) / (1000 * 60));
+    
+    if (minutesAgo < 1) {
+      return 'Just now';
+    } else if (minutesAgo < 60) {
+      return `${minutesAgo} minute${minutesAgo > 1 ? 's' : ''} ago`;
+    } else {
+      const hoursAgo = Math.floor(minutesAgo / 60);
+      return `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
+    }
+  }
+
+  getDatabaseStatus() {
+    // Check if any sensor data is available to determine database connectivity
+    const hasData = this.temperatureData || this.humidityData || this.soilMoistureData;
+    
+    if (hasData) {
+      return { 
+        class: 'online', 
+        text: 'Connected', 
+        details: 'Database is accessible' 
+      };
+    } else {
+      return { 
+        class: 'offline', 
+        text: 'Disconnected', 
+        details: 'Cannot connect to database' 
+      };
+    }
   }
 }
