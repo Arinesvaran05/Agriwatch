@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
@@ -13,7 +13,10 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
       <!-- Header -->
       <header class="humidity-header">
         <div class="header-content">
-          <h1>💧 Humidity Monitoring</h1>
+          <div class="header-left">
+            <button (click)="goBack()" class="back-btn">← Back</button>
+            <h1>💧 Humidity Monitoring</h1>
+          </div>
           <div class="user-info">
             <span>Welcome, {{ currentUser?.name }}</span>
             <button (click)="logout()" class="logout-btn">Sign Out</button>
@@ -27,6 +30,7 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
         <a routerLink="/user/temperature" class="nav-item">Temperature</a>
         <a routerLink="/user/humidity" class="nav-item active">Humidity</a>
         <a routerLink="/user/soil-moisture" class="nav-item">Soil Moisture</a>
+        <a routerLink="/user/data-visualization" class="nav-item">Data Visualization</a>
         <a routerLink="/user/profile" class="nav-item">Profile</a>
       </nav>
 
@@ -53,7 +57,18 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
 
         <!-- Historical Data -->
         <section class="historical-data">
-          <h2>Humidity History</h2>
+          <div class="section-header">
+            <h2>Humidity History</h2>
+            <div class="refresh-controls">
+              <button (click)="manualRefresh()" class="refresh-btn" [disabled]="isRefreshing">
+                <span *ngIf="!isRefreshing">🔄 Refresh</span>
+                <span *ngIf="isRefreshing">⏳ Refreshing...</span>
+              </button>
+              <div class="last-refresh" *ngIf="lastRefreshTime">
+                Last updated: {{ lastRefreshTime | date:'short' }}
+              </div>
+            </div>
+          </div>
           <div class="data-controls">
             <button (click)="loadHumidityLog(50)" class="control-btn">Last 50</button>
             <button (click)="loadHumidityLog(100)" class="control-btn">Last 100</button>
@@ -112,6 +127,18 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
             </div>
           </div>
         </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2>Quick Actions</h2>
+          <div class="action-buttons">
+            <button (click)="goToDashboard()" class="action-btn">🏠 Dashboard</button>
+            <button (click)="goToTemperature()" class="action-btn">🌡️ Temperature</button>
+            <button (click)="goToSoilMoisture()" class="action-btn">🌱 Soil Moisture</button>
+            <button (click)="goToDataVisualization()" class="action-btn">📊 Data Visualization</button>
+            <button (click)="goToProfile()" class="action-btn">👤 Profile</button>
+          </div>
+        </section>
       </main>
     </div>
   `,
@@ -135,6 +162,27 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
 
     .header-content h1 {
@@ -164,7 +212,7 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
 
     .humidity-nav {
       background: white;
-      padding: 0 20px;
+      padding: 0 40px;
       border-bottom: 1px solid #e1e8ed;
     }
 
@@ -196,6 +244,50 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
       color: #2c3e50;
       margin-bottom: 20px;
       font-size: 1.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .refresh-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .refresh-btn {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .refresh-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+
+    .refresh-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .last-refresh {
+      color: #6c757d;
+      font-size: 0.85rem;
+      font-style: italic;
     }
 
     .reading-card {
@@ -336,6 +428,38 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
       color: #667eea;
     }
 
+    .quick-actions {
+      margin-bottom: 40px;
+    }
+
+    .quick-actions h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
     @media (max-width: 768px) {
       .header-content {
         flex-direction: column;
@@ -355,14 +479,21 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
       .stats-grid {
         grid-template-columns: 1fr;
       }
+
+      .action-buttons {
+        justify-content: center;
+      }
     }
   `]
 })
-export class HumidityComponent implements OnInit {
+export class HumidityComponent implements OnInit, OnDestroy {
   currentUser: any;
   currentHumidity: SensorData | null = null;
   humidityLog: SensorLog[] = [];
   selectedLimit = 50;
+  isRefreshing = false;
+  lastRefreshTime: Date | null = null;
+  refreshInterval: any;
 
   constructor(
     private authService: AuthService,
@@ -376,11 +507,16 @@ export class HumidityComponent implements OnInit {
     this.loadCurrentHumidity();
     this.loadHumidityLog(this.selectedLimit);
     
-    // Refresh current humidity every 20s and logs every 20s
-    setInterval(() => {
-      this.loadCurrentHumidity();
-      this.loadHumidityLog(this.selectedLimit);
-    }, 20000);
+    // Refresh current humidity and logs every 10 seconds
+    this.refreshInterval = setInterval(() => {
+      this.refreshData();
+    }, 10000);
+  }
+
+  ngOnDestroy() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   loadCurrentHumidity() {
@@ -397,6 +533,22 @@ export class HumidityComponent implements OnInit {
       next: (data) => this.humidityLog = data,
       error: (error) => console.error('Error loading humidity log:', error)
     });
+  }
+
+  refreshData() {
+    this.isRefreshing = true;
+    this.loadCurrentHumidity();
+    this.loadHumidityLog(this.selectedLimit);
+    this.lastRefreshTime = new Date();
+    
+    // Reset refreshing state after a short delay
+    setTimeout(() => {
+      this.isRefreshing = false;
+    }, 1000);
+  }
+
+  manualRefresh() {
+    this.refreshData();
   }
 
   downloadData(limit: number = 100) {
@@ -443,6 +595,30 @@ export class HumidityComponent implements OnInit {
 
   getHumidityRange(): number {
     return Math.round((this.getMaxHumidity() - this.getMinHumidity()) * 100) / 100;
+  }
+
+  goBack() {
+    this.router.navigate(['/user/dashboard']);
+  }
+
+  goToDashboard() {
+    this.router.navigate(['/user/dashboard']);
+  }
+
+  goToTemperature() {
+    this.router.navigate(['/user/temperature']);
+  }
+
+  goToSoilMoisture() {
+    this.router.navigate(['/user/soil-moisture']);
+  }
+
+  goToDataVisualization() {
+    this.router.navigate(['/user/data-visualization']);
+  }
+
+  goToProfile() {
+    this.router.navigate(['/user/profile']);
   }
 
   logout() {
