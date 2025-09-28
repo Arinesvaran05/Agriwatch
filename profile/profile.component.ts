@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { DataService } from '../../../services/data.service';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
     <div class="profile-container">
       <!-- Header -->
@@ -28,11 +28,19 @@ import { DataService } from '../../../services/data.service';
         <a routerLink="/user/temperature" class="nav-item">Temperature</a>
         <a routerLink="/user/humidity" class="nav-item">Humidity</a>
         <a routerLink="/user/soil-moisture" class="nav-item">Soil Moisture</a>
+        <a routerLink="/user/data-visualization" class="nav-item">Data Visualization</a>
         <a routerLink="/user/profile" class="nav-item active">Profile</a>
       </nav>
 
       <!-- Main Content -->
       <main class="profile-main">
+        <!-- Back Button -->
+        <div class="back-section">
+          <button (click)="goBack()" class="back-btn">
+            ← Back to Dashboard
+          </button>
+        </div>
+
         <div class="profile-card">
           <h2>Profile Information</h2>
           
@@ -81,7 +89,7 @@ import { DataService } from '../../../services/data.service';
               <input 
                 type="text" 
                 id="createdAt" 
-                [value]="currentUser?.createdAt | date:'medium'" 
+                [value]="currentUser?.created_at | date:'medium'" 
                 readonly
                 class="readonly"
               >
@@ -95,6 +103,7 @@ import { DataService } from '../../../services/data.service';
           
           <div class="profile-actions">
             <button (click)="navigateToChangePassword()" class="action-btn">Change Password</button>
+            <button (click)="navigateToDataVisualization()" class="action-btn">📊 Data Visualization</button>
           </div>
           
           <div class="success-alert" *ngIf="successMessage">
@@ -157,7 +166,7 @@ import { DataService } from '../../../services/data.service';
 
     .profile-nav {
       background: white;
-      padding: 0 20px;
+      padding: 0 40px;
       border-bottom: 1px solid #e1e8ed;
     }
 
@@ -179,6 +188,25 @@ import { DataService } from '../../../services/data.service';
       max-width: 800px;
       margin: 0 auto;
       padding: 30px 20px;
+    }
+
+    .back-section {
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: #5a6268;
     }
 
     .profile-card {
@@ -351,6 +379,10 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  goBack() {
+    this.router.navigate(['/user/dashboard']);
+  }
+
   onSubmit() {
     if (this.profileForm.valid) {
       this.isLoading = true;
@@ -358,21 +390,39 @@ export class ProfileComponent implements OnInit {
       this.errorMessage = '';
       
       const profileData = {
+        id: this.currentUser.id,
         name: this.profileForm.value.name,
         email: this.profileForm.value.email
       };
       
+      // Debug: Log what we're sending
+      console.log('Current user:', this.currentUser);
+      console.log('Profile form values:', this.profileForm.value);
+      console.log('Sending profile data:', profileData);
+      
       this.dataService.updateProfile(profileData).subscribe({
         next: (response) => {
+          console.log('Profile update successful:', response);
           this.isLoading = false;
           this.successMessage = 'Profile updated successfully!';
           // Update local user data
           this.currentUser = { ...this.currentUser, ...profileData };
           this.authService.updateCurrentUser(this.currentUser);
+          // Clear success message after 3 seconds
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 3000);
         },
         error: (error) => {
+          console.error('Profile update error:', error);
+          console.error('Error details:', error.error);
+          console.error('Error message:', error.error?.message);
           this.isLoading = false;
           this.errorMessage = error.error?.message || 'Failed to update profile. Please try again.';
+          // Clear error message after 5 seconds
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 5000);
         }
       });
     }
@@ -380,6 +430,10 @@ export class ProfileComponent implements OnInit {
 
   navigateToChangePassword() {
     this.router.navigate(['/user/change-password']);
+  }
+
+  navigateToDataVisualization() {
+    this.router.navigate(['/user/data-visualization']);
   }
 
   logout() {
