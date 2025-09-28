@@ -27,6 +27,7 @@ import { DataService, SensorData } from '../../../services/data.service';
         <a routerLink="/user/temperature" class="nav-item">Temperature</a>
         <a routerLink="/user/humidity" class="nav-item">Humidity</a>
         <a routerLink="/user/soil-moisture" class="nav-item">Soil Moisture</a>
+        <a routerLink="/user/data-visualization" class="nav-item">Data Visualization</a>
         <a routerLink="/user/profile" class="nav-item">Profile</a>
       </nav>
 
@@ -104,6 +105,11 @@ import { DataService, SensorData } from '../../../services/data.service';
               <div class="action-icon">📋</div>
               <h3>View Soil Moisture Log</h3>
               <p>Track soil moisture levels</p>
+            </div>
+            <div class="action-card" (click)="navigateTo('/user/data-visualization')">
+              <div class="action-icon">📊</div>
+              <h3>Data Visualization</h3>
+              <p>Live charts and analytics</p>
             </div>
             <div class="action-card" (click)="navigateTo('/user/profile')">
               <div class="action-icon">👤</div>
@@ -203,7 +209,7 @@ import { DataService, SensorData } from '../../../services/data.service';
 
     .dashboard-nav {
       background: white;
-      padding: 0 20px;
+      padding: 0 40px;
       border-bottom: 1px solid #e1e8ed;
     }
 
@@ -356,9 +362,6 @@ import { DataService, SensorData } from '../../../services/data.service';
       background: #e74c3c;
     }
 
-    .status-indicator.stale {
-      background: #f39c12;
-    }
 
     .status-content h3 {
       margin: 0 0 5px 0;
@@ -449,8 +452,6 @@ export class DashboardComponent implements OnInit {
     
     if (minutesAgo <= 2) {
       return { class: 'online', text: 'Online' };
-    } else if (minutesAgo <= 10) {
-      return { class: 'stale', text: 'Stale' };
     } else {
       return { class: 'offline', text: 'Offline' };
     }
@@ -467,8 +468,6 @@ export class DashboardComponent implements OnInit {
     
     if (minutesAgo <= 2) {
       return { class: 'online', text: 'Online' };
-    } else if (minutesAgo <= 10) {
-      return { class: 'stale', text: 'Stale' };
     } else {
       return { class: 'offline', text: 'Offline' };
     }
@@ -485,8 +484,6 @@ export class DashboardComponent implements OnInit {
     
     if (minutesAgo <= 2) {
       return { class: 'online', text: 'Online' };
-    } else if (minutesAgo <= 10) {
-      return { class: 'stale', text: 'Stale' };
     } else {
       return { class: 'offline', text: 'Offline' };
     }
