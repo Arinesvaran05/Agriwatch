@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
@@ -30,6 +30,7 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
         <a routerLink="/user/temperature" class="nav-item active">Temperature</a>
         <a routerLink="/user/humidity" class="nav-item">Humidity</a>
         <a routerLink="/user/soil-moisture" class="nav-item">Soil Moisture</a>
+        <a routerLink="/user/data-visualization" class="nav-item">Data Visualization</a>
         <a routerLink="/user/profile" class="nav-item">Profile</a>
       </nav>
 
@@ -56,7 +57,18 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
 
         <!-- Historical Data -->
         <section class="historical-data">
-          <h2>Temperature History</h2>
+          <div class="section-header">
+            <h2>Temperature History</h2>
+            <div class="refresh-controls">
+              <button (click)="manualRefresh()" class="refresh-btn" [disabled]="isRefreshing">
+                <span *ngIf="!isRefreshing">🔄 Refresh</span>
+                <span *ngIf="isRefreshing">⏳ Refreshing...</span>
+              </button>
+              <div class="last-refresh" *ngIf="lastRefreshTime">
+                Last updated: {{ lastRefreshTime | date:'short' }}
+              </div>
+            </div>
+          </div>
           <div class="data-controls">
             <button (click)="loadTemperatureLog(50)" class="control-btn">Last 50</button>
             <button (click)="loadTemperatureLog(100)" class="control-btn">Last 100</button>
@@ -123,6 +135,7 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
             <button (click)="goToDashboard()" class="action-btn">🏠 Dashboard</button>
             <button (click)="goToHumidity()" class="action-btn">💧 Humidity</button>
             <button (click)="goToSoilMoisture()" class="action-btn">🌱 Soil Moisture</button>
+            <button (click)="goToDataVisualization()" class="action-btn">📊 Data Visualization</button>
             <button (click)="goToProfile()" class="action-btn">👤 Profile</button>
           </div>
         </section>
@@ -199,7 +212,7 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
 
     .temperature-nav {
       background: white;
-      padding: 0 20px;
+      padding: 0 40px;
       border-bottom: 1px solid #e1e8ed;
     }
 
@@ -231,6 +244,50 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
       color: #2c3e50;
       margin-bottom: 20px;
       font-size: 1.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .refresh-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .refresh-btn {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .refresh-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+
+    .refresh-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .last-refresh {
+      color: #6c757d;
+      font-size: 0.85rem;
+      font-style: italic;
     }
 
     .reading-card {
@@ -432,11 +489,14 @@ import { DataService, SensorData, SensorLog } from '../../../services/data.servi
     }
   `]
 })
-export class TemperatureComponent implements OnInit {
+export class TemperatureComponent implements OnInit, OnDestroy {
   currentUser: any;
   currentTemperature: SensorData | null = null;
   temperatureLog: SensorLog[] = [];
   selectedLimit = 50;
+  isRefreshing = false;
+  lastRefreshTime: Date | null = null;
+  refreshInterval: any;
 
   constructor(
     private authService: AuthService,
@@ -450,11 +510,16 @@ export class TemperatureComponent implements OnInit {
     this.loadCurrentTemperature();
     this.loadTemperatureLog(this.selectedLimit);
     
-    // Refresh current temperature and logs every 20 seconds
-    setInterval(() => {
-      this.loadCurrentTemperature();
-      this.loadTemperatureLog(this.selectedLimit);
-    }, 20000);
+    // Refresh current temperature and logs every 10 seconds
+    this.refreshInterval = setInterval(() => {
+      this.refreshData();
+    }, 10000);
+  }
+
+  ngOnDestroy() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   loadCurrentTemperature() {
@@ -470,6 +535,22 @@ export class TemperatureComponent implements OnInit {
       next: (data) => this.temperatureLog = data,
       error: (error) => console.error('Error loading temperature log:', error)
     });
+  }
+
+  refreshData() {
+    this.isRefreshing = true;
+    this.loadCurrentTemperature();
+    this.loadTemperatureLog(this.selectedLimit);
+    this.lastRefreshTime = new Date();
+    
+    // Reset refreshing state after a short delay
+    setTimeout(() => {
+      this.isRefreshing = false;
+    }, 1000);
+  }
+
+  manualRefresh() {
+    this.refreshData();
   }
 
   downloadData(limit: number = 100) {
@@ -532,6 +613,10 @@ export class TemperatureComponent implements OnInit {
 
   goToSoilMoisture() {
     this.router.navigate(['/user/soil-moisture']);
+  }
+
+  goToDataVisualization() {
+    this.router.navigate(['/user/data-visualization']);
   }
 
   goToProfile() {
