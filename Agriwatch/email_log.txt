@@ -1,0 +1,132 @@
+2025-10-31 01:14:43 - To: user@agriwatch.com, Subject: AgriWatch - Password Reset Code, Sent: YES
+Message: 
+        <html>
+        <head>
+            <title>Password Reset</title>
+        </head>
+        <body>
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                <h2 style='color: #667eea;'>🌱 AgriWatch - Password Reset</h2>
+                <p>Hello <strong>User</strong>,</p>
+                <p>We received a request to reset your password. Please use the verification code below:</p>
+                
+                <div style='text-align: center; margin: 30px 0;'>
+                    <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; display: inline-block;'>
+                        <h1 style='margin: 0; font-size: 2.5rem; letter-spacing: 8px;'>8135</h1>
+                    </div>
+                </div>
+                
+                <p><strong>Your reset code is: 8135</strong></p>
+                
+                <p>Please enter this 4-digit code on the password reset page to create a new password.</p>
+                
+                <p style='color: #e74c3c;'><strong>Important:</strong> This code will expire in 10 minutes for security reasons.</p>
+                
+                <p>If you didn't request a password reset, please ignore this email.</p>
+                
+                <hr style='margin: 30px 0; border: none; border-top: 1px solid #e1e8ed;'>
+                <p style='color: #7f8c8d; font-size: 12px;'>This is an automated email from AgriWatch. Please do not reply to this email.</p>
+            </div>
+        </body>
+        </html>
+        
+--------------------------------------------------------------------------------
+2025-10-31 01:15:09 - To: teliheh302@keevle.com, Subject: AgriWatch - Email Verification Code, Sent: YES
+Message: 
+        <html>
+        <head>
+            <title>Email Verification</title>
+        </head>
+        <body>
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                <h2 style='color: #667eea;'>🌱 AgriWatch - Email Verification</h2>
+                <p>Hello <strong>aasasw</strong>,</p>
+                <p>Thank you for creating your AgriWatch account! Please verify your email address using the verification code below:</p>
+                
+                <div style='text-align: center; margin: 30px 0;'>
+                    <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; display: inline-block;'>
+                        <h1 style='margin: 0; font-size: 2.5rem; letter-spacing: 8px;'>4777</h1>
+                    </div>
+                </div>
+                
+                <p><strong>Your verification code is: 4777</strong></p>
+                
+                <p>Please enter this 4-digit code on the verification page to complete your account setup.</p>
+                
+                <p style='color: #e74c3c;'><strong>Important:</strong> This code will expire in 10 minutes for security reasons.</p>
+                
+                <p>If you didn't create this account, please ignore this email.</p>
+                
+                <hr style='margin: 30px 0; border: none; border-top: 1px solid #e1e8ed;'>
+                <p style='color: #7f8c8d; font-size: 12px;'>This is an automated email from AgriWatch. Please do not reply to this email.</p>
+            </div>
+        </body>
+        </html>
+        
+--------------------------------------------------------------------------------
+2025-10-31 01:15:25 - To: arinesvaran597@gmail.com, Subject: AgriWatch - Password Reset Code, Sent: YES
+Message: 
+        <html>
+        <head>
+            <title>Password Reset</title>
+        </head>
+        <body>
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                <h2 style='color: #667eea;'>🌱 AgriWatch - Password Reset</h2>
+                <p>Hello <strong>Arinesvaran</strong>,</p>
+                <p>We received a request to reset your password. Please use the verification code below:</p>
+                
+                <div style='text-align: center; margin: 30px 0;'>
+                    <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; display: inline-block;'>
+                        <h1 style='margin: 0; font-size: 2.5rem; letter-spacing: 8px;'>9406</h1>
+                    </div>
+                </div>
+                
+                <p><strong>Your reset code is: 9406</strong></p>
+                
+                <p>Please enter this 4-digit code on the password reset page to create a new password.</p>
+                
+                <p style='color: #e74c3c;'><strong>Important:</strong> This code will expire in 10 minutes for security reasons.</p>
+                
+                <p>If you didn't request a password reset, please ignore this email.</p>
+                
+                <hr style='margin: 30px 0; border: none; border-top: 1px solid #e1e8ed;'>
+                <p style='color: #7f8c8d; font-size: 12px;'>This is an automated email from AgriWatch. Please do not reply to this email.</p>
+            </div>
+        </body>
+        </html>
+        
+--------------------------------------------------------------------------------
+2025-10-31 01:17:27 - To: user@agriwatch.com, Subject: AgriWatch - Password Reset Code, Sent: YES
+Message: 
+        <html>
+        <head>
+            <title>Password Reset</title>
+        </head>
+        <body>
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                <h2 style='color: #667eea;'>🌱 AgriWatch - Password Reset</h2>
+                <p>Hello <strong>User</strong>,</p>
+                <p>We received a request to reset your password. Please use the verification code below:</p>
+                
+                <div style='text-align: center; margin: 30px 0;'>
+                    <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; display: inline-block;'>
+                        <h1 style='margin: 0; font-size: 2.5rem; letter-spacing: 8px;'>4035</h1>
+                    </div>
+                </div>
+                
+                <p><strong>Your reset code is: 4035</strong></p>
+                
+                <p>Please enter this 4-digit code on the password reset page to create a new password.</p>
+                
+                <p style='color: #e74c3c;'><strong>Important:</strong> This code will expire in 10 minutes for security reasons.</p>
+                
+                <p>If you didn't request a password reset, please ignore this email.</p>
+                
+                <hr style='margin: 30px 0; border: none; border-top: 1px solid #e1e8ed;'>
+                <p style='color: #7f8c8d; font-size: 12px;'>This is an automated email from AgriWatch. Please do not reply to this email.</p>
+            </div>
+        </body>
+        </html>
+        
+--------------------------------------------------------------------------------

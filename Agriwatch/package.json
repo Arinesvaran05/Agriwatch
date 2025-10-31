@@ -1,0 +1,36 @@
+{
+  "name": "agriwatch",
+  "version": "1.0.0",
+  "description": "IoT Agricultural Monitoring System",
+  "scripts": {
+    "start": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "install": "cd frontend && npm install",
+    "test": "cd frontend && npm test",
+    "serve": "cd frontend && ng serve",
+    "dev": "cd frontend && npm start",
+    "frontend:start": "cd frontend && npm start",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:install": "cd frontend && npm install",
+    "backend:test": "php tests/test-db-connection.php",
+    "setup": "npm run frontend:install"
+  },
+  "keywords": [
+    "iot",
+    "agriculture",
+    "monitoring",
+    "angular",
+    "php",
+    "esp8266"
+  ],
+  "author": "AgriWatch Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
