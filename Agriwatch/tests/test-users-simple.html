@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .user { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+        .verified { background-color: #d4edda; }
+        .unverified { background-color: #f8d7da; }
+        button { padding: 10px 20px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Users API Test</h1>
+    <button onclick="testAPI()">Test Users API</button>
+    <button onclick="clearCache()">Clear Cache & Test</button>
+    <div id="result"></div>
+
+    <script>
+        function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Loading...';
+            
+            fetch('http://localhost/agriwatch/api/admin/users.php', {
+                method: 'GET',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Raw API response:', data);
+                displayUsers(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            });
+        }
+
+        function clearCache() {
+            // Clear browser cache
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            testAPI();
+        }
+
+        function displayUsers(data) {
+            const resultDiv = document.getElementById('result');
+            const users = data.users || data;
+            
+            let html = '<h2>Users Data:</h2>';
+            users.forEach(user => {
+                const isVerified = user.is_email_verified;
+                const statusClass = isVerified ? 'verified' : 'unverified';
+                const statusText = isVerified ? '✓ VERIFIED' : '✗ UNVERIFIED';
+                
+                html += `
+                    <div class="user ${statusClass}">
+                        <strong>${user.name}</strong> (${user.email})<br>
+                        Role: ${user.role}<br>
+                        Email Verified: <strong>${statusText}</strong><br>
+                        Raw Value: ${JSON.stringify(user.is_email_verified)}<br>
+                        Type: ${typeof user.is_email_verified}
+                    </div>
+                `;
+            });
+            
+            resultDiv.innerHTML = html;
+        }
+
+        // Auto-test on page load
+        window.onload = testAPI;
+    </script>
+</body>
+</html>

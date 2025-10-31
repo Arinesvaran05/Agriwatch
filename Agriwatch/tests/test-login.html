@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Endpoints - AgriWatch</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-section { margin: 20px 0; padding: 15px; border-left: 4px solid #3498db; background: #f8f9fa; }
+        .success { color: #27ae60; font-weight: bold; }
+        .error { color: #e74c3c; font-weight: bold; }
+        .warning { color: #f39c12; font-weight: bold; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        button:hover { background: #2980b9; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; background: #f8f9fa; }
+        input { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Login Endpoints - AgriWatch</h1>
+        
+        <div class="test-section">
+            <h3>📋 Test Data</h3>
+            <p><strong>Admin Credentials:</strong></p>
+            <p>Email: <input type="text" id="adminEmail" value="admin@agriwatch.com" readonly></p>
+            <p>Password: <input type="text" id="adminPassword" value="admin123" readonly></p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Test Admin Login Endpoint</h3>
+            <p>Testing: <code>http://localhost/agriwatch/api/auth/admin-login.php</code></p>
+            <button onclick="testAdminLogin()">Test Admin Login</button>
+            <div id="adminResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>👤 Test User Login Endpoint</h3>
+            <p>Testing: <code>http://localhost/agriwatch/api/auth/user-login.php</code></p>
+            <button onclick="testUserLogin()">Test User Login</button>
+            <div id="userResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Test Database Connection</h3>
+            <p>Testing: <code>http://localhost/agriwatch/api/check-database.php</code></p>
+            <button onclick="testDatabase()">Test Database</button>
+            <div id="dbResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📱 Test Angular App</h3>
+            <p>Testing: <code>http://localhost:4201</code></p>
+            <button onclick="testAngular()">Test Angular</button>
+            <div id="angularResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🚨 Troubleshooting Steps</h3>
+            <ol>
+                <li><strong>Check XAMPP:</strong> Make sure Apache and MySQL are running</li>
+                <li><strong>Check Database:</strong> Run the database check script first</li>
+                <li><strong>Check Angular:</strong> Make sure Angular dev server is running on port 4201</li>
+                <li><strong>Check URLs:</strong> Verify the correct paths are accessible</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function testAdminLogin() {
+            const resultDiv = document.getElementById('adminResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Testing admin login...</p>';
+
+            try {
+                const response = await fetch('http://localhost/agriwatch/api/auth/admin-login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@agriwatch.com',
+                        password: 'admin123'
+                    })
+                });
+
+                const result = await response.text();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = '<p class="success">✅ Admin login successful!</p><pre>' + result + '</pre>';
+                } else {
+                    resultDiv.innerHTML = '<p class="error">❌ Admin login failed (HTTP ' + response.status + ')</p><pre>' + result + '</pre>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function testUserLogin() {
+            const resultDiv = document.getElementById('userResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Testing user login...</p>';
+
+            try {
+                const response = await fetch('http://localhost/agriwatch/api/auth/user-login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@agriwatch.com',
+                        password: 'admin123'
+                    })
+                });
+
+                const result = await response.text();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = '<p class="success">✅ User login successful!</p><pre>' + result + '</pre>';
+                } else {
+                    resultDiv.innerHTML = '<p class="error">❌ User login failed (HTTP ' + response.status + ')</p><pre>' + result + '</pre>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function testDatabase() {
+            const resultDiv = document.getElementById('dbResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Testing database...</p>';
+
+            try {
+                const response = await fetch('http://localhost/agriwatch/api/check-database.php');
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = '<p class="success">✅ Database check accessible!</p><p>Open <a href="http://localhost/agriwatch/api/check-database.php" target="_blank">this link</a> to run the full database check.</p>';
+                } else {
+                    resultDiv.innerHTML = '<p class="error">❌ Database check failed (HTTP ' + response.status + ')</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function testAngular() {
+            const resultDiv = document.getElementById('angularResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Testing Angular app...</p>';
+
+            try {
+                const response = await fetch('http://localhost:4201');
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = '<p class="success">✅ Angular app accessible!</p><p>Open <a href="http://localhost:4201" target="_blank">this link</a> to access the app.</p>';
+                } else {
+                    resultDiv.innerHTML = '<p class="error">❌ Angular app failed (HTTP ' + response.status + ')</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>
